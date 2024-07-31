@@ -1,0 +1,9 @@
+
+extends ../layout 
+
+block sidebar
+  ul.sidebar 
+    - const url = "/category";
+    li
+      a(href=(url + '/create')) Create category
+  block content

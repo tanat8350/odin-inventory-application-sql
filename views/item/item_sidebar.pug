@@ -1,0 +1,9 @@
+
+extends ../layout 
+
+block sidebar
+  ul.sidebar 
+    - const url = "/item";
+    li
+      a(href=(url + '/create')) Create item
+  block content

@@ -1,0 +1,23 @@
+extends item_sidebar 
+
+block content
+  h1 Item: #{title}
+  p
+    span.bold Name: #{item.name}
+  p
+    span.bold Description: #{item.description}
+  p
+    span.bold Category: 
+    a(href=item.category.url) #{item.category.name}
+  p
+    span.bold Price: #{item.price}
+  p
+    span.bold In stock: #{item.instock}
+  p
+    span.bold Image url: #{item.image_url}
+  
+  p
+    a(href=item.url + '/update') Update 
+
+  form(action=item.url + "/delete", method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)") 
+    button(type="submit") Delete

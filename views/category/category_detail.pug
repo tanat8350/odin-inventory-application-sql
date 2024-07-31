@@ -1,0 +1,22 @@
+extends category_sidebar 
+
+block content
+  h1 Category: #{title}
+  p
+    span.bold Name: #{category.name}
+  p
+    span.bold Description: #{category.description}
+  
+  p
+    a(href=category.url + '/update') Update 
+
+  form(action=category.url + "/delete", method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)") 
+    button(type="submit") Delete
+  
+  h2 All Items
+  if items.length 
+    each item in items 
+      p
+        a(href=item.url) #{item.name}
+  else 
+    p There is no item.
