@@ -1,4 +1,4 @@
-extends item_sidebar 
+extends item_sidebar
 
 block content
   h1= title
@@ -6,7 +6,9 @@ block content
     ul
       each item in items
         li
-          a(href=item.url) #{item.name}
-          |  #{item.description} #{item.category.name}
+          a(href=`/item/${item.id}`) #{item.name}
+          | &nbsp;[
+          a(href=`/category/${item.categoryid}`) #{item.categoryname}
+          | ]
   else
     p There are no item.

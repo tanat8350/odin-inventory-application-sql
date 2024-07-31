@@ -1,36 +1,36 @@
-extends item_sidebar 
+extends item_sidebar
 
 block content
   h1= title
 
-  form(method="POST") 
+  form(method="POST")
     div
-      label(for='name') Name 
+      label(for='name') Name
       input#name(name='name' value=(undefined === item ? '' : item.name))
     div
-      label(for='description') Description 
+      label(for='description') Description
       input#description(name='description' value=(undefined === item ? '' : item.description))
     div
-      label(for='category') Category  
+      label(for='category') Category
       select#category(name='category' required)
         option(value='') select one
-        for category in categories 
-          if item && item.category.toString() === category._id.toString() || item.category._id.toString() === category._id.toString()
-            option(value=category._id selected) #{category.name}
+        for category in categories
+          if item && (item.categoryid.toString() === category.id.toString() || item.categoryid.toString() === category.id.toString())
+            option(value=category.id selected) #{category.name}
           else
-            option(value=category._id) #{category.name}
+            option(value=category.id) #{category.name}
     div
-      label(for='price') Price 
+      label(for='price') Price
       input#price(name='price' value=(undefined === item ? '' : item.price))
     div
-      label(for='instock') Instock (qty) 
+      label(for='instock') Instock (qty)
       input#instock(name='instock' value=(undefined === item ? '' : item.instock))
     div
-      label(for='image_url') Image 
+      label(for='image_url') Image
       input#image_url(name='image_url' value=(undefined === item ? '' : item.image_url))
     button.submit-btn(type='submit') Submit
 
-  if errors 
-    ul 
-      each error in errors 
-        li= error.msg 
+  if errors
+    ul
+      each error in errors
+        li= error.msg

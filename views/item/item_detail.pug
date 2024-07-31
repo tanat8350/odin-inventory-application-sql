@@ -1,23 +1,28 @@
-extends item_sidebar 
+extends item_sidebar
 
 block content
   h1 Item: #{title}
   p
-    span.bold Name: #{item.name}
+    span.bold Name:&nbsp;
+    | #{item.name}
   p
-    span.bold Description: #{item.description}
+    span.bold Description:&nbsp;
+    | #{item.description}
   p
-    span.bold Category: 
-    a(href=item.category.url) #{item.category.name}
+    span.bold Category:&nbsp;
+    a(href=`/category/${item.categoryid}`) #{item.categoryname}
   p
-    span.bold Price: #{item.price}
+    span.bold Price:&nbsp;
+    | #{item.price}
   p
-    span.bold In stock: #{item.instock}
+    span.bold In stock:&nbsp;
+    | #{item.instock}
   p
-    span.bold Image url: #{item.image_url}
-  
-  p
-    a(href=item.url + '/update') Update 
+    span.bold Image url:&nbsp;
+    | #{item.image_url}
 
-  form(action=item.url + "/delete", method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)") 
+  p
+    a(href=`/item/${item.id}/update`) Update
+
+  form(action=`/item/${item.id}/delete`, method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)")
     button(type="submit") Delete
