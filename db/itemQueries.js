@@ -7,6 +7,15 @@ module.exports = {
     );
     return rows;
   },
+  getItemsByCategory: async (categoryid) => {
+    const { rows } = await pool.query(
+      `select items.*, categories.name as categoryname from items
+      inner join categories on items.categoryid = categories.id
+      where categoryid = $1`,
+      [categoryid]
+    );
+    return rows;
+  },
 
   getItem: async (id) => {
     const { rows } = await pool.query(

@@ -1,26 +1,27 @@
 const asyncHandler = require('express-async-handler');
 const { body, validationResult } = require('express-validator');
 
-const Category = require('../models/category');
-const Item = require('../models/item');
+const categoryQueries = require('../db/categoryQueries');
+const itemQueries = require('../db/itemQueries');
 
-const notFoundHandler = (data) => {
+const notFoundHandler = (data, message) => {
   if (data === null) {
-    const err = new Error('Category not found');
+    const msg = message || 'Category not found';
+    const err = new Error(msg);
     err.status = 404;
     return next(err);
   }
 };
 
-exports.list = asyncHandler(async (req, res, next) => {
-  const allCategories = await Category.find().sort({ name: 1 }).exec();
-  res.render('category_list', { title: 'Categories', items: allCategories });
+exports.getAllCategories = asyncHandler(async (req, res, next) => {
+  const categories = await categoryQueries.getAllCategories();
+  res.render('category_list', { title: 'Categories', categories });
 });
 
-exports.detail = asyncHandler(async (req, res, next) => {
+exports.getCategory = asyncHandler(async (req, res, next) => {
   const [category, items] = await Promise.all([
-    Category.findById(req.params.id).sort({ name: 1 }).exec(),
-    Item.find({ category: req.params.id }).sort({ name: 1 }).exec(),
+    categoryQueries.getCategory(req.params.id),
+    itemQueries.getItemsByCategory(req.params.id),
   ]);
 
   notFoundHandler(category);
@@ -31,28 +32,30 @@ exports.detail = asyncHandler(async (req, res, next) => {
     items,
   });
 });
-exports.create_get = asyncHandler(async (req, res, next) => {
+
+exports.getCreateCategory = asyncHandler(async (req, res, next) => {
   res.render('category_form', { title: 'Create category' });
 });
+
 const validateForm = [
   body('name')
     .trim()
     .isLength({ min: 1 })
-    .escape()
     .withMessage('Name must be specified.')
     .isAlphanumeric()
     .withMessage('Name has non-alphanumeric characters.'),
   body('description').trim(),
 ];
-exports.create_post = [
+
+exports.postCreateCategory = [
   validateForm,
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
-    const category = new Category({
+    const category = {
       name: req.body.name,
       description: req.body.description,
-    });
+    };
 
     if (!errors.isEmpty()) {
       res.render('category_form', {
@@ -61,38 +64,37 @@ exports.create_post = [
         errors: errors.array(),
       });
       return;
-    } else {
-      await category.save();
-      res.redirect(category.url);
     }
+    const created = await categoryQueries.createCategory(
+      category.name,
+      category.description
+    );
+    notFoundHandler(created, 'Error while creating category');
+    res.redirect(`/category/${created.id}`);
   }),
 ];
-exports.delete_get = asyncHandler(async (req, res, next) => {
-  res.send('delete_get');
-});
-exports.delete_post = asyncHandler(async (req, res, next) => {
-  await Category.findByIdAndDelete(req.params.id);
+
+exports.postDeleteCategory = asyncHandler(async (req, res, next) => {
+  const deleted = await categoryQueries.deleteCategory(req.params.id);
+  notFoundHandler(deleted, 'Error while deleting category');
   res.redirect('/category');
 });
-exports.update_get = asyncHandler(async (req, res, next) => {
-  const category = await Category.findById(req.params.id)
-    .sort({ name: 1 })
-    .exec();
 
+exports.getUpdateCategory = asyncHandler(async (req, res, next) => {
+  const category = await categoryQueries.getCategory(req.params.id);
   notFoundHandler(category);
-
   res.render('category_form', { title: 'Update category', category });
 });
-exports.update_post = [
+
+exports.postUpdateCategory = [
   validateForm,
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
-    const category = new Category({
+    const category = {
       name: req.body.name,
       description: req.body.description,
-      _id: req.params.id,
-    });
+    };
 
     if (!errors.isEmpty()) {
       res.render('category_form', {
@@ -101,13 +103,13 @@ exports.update_post = [
         errors: errors.array(),
       });
       return;
-    } else {
-      const updated = await Category.findByIdAndUpdate(
-        req.params.id,
-        category,
-        {}
-      );
-      res.redirect(updated.url);
     }
+    const updated = await categoryQueries.updateCategory(
+      req.params.id,
+      category.name,
+      category.description
+    );
+    notFoundHandler(updated, 'Error while updating category');
+    res.redirect(`/category/${updated.id}`);
   }),
 ];

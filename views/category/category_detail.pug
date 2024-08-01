@@ -1,22 +1,24 @@
-extends category_sidebar 
+extends category_sidebar
 
 block content
   h1 Category: #{title}
   p
-    span.bold Name: #{category.name}
+    span.bold Name:&nbsp;
+    | #{category.name}
   p
-    span.bold Description: #{category.description}
-  
-  p
-    a(href=category.url + '/update') Update 
+    span.bold Description:&nbsp;
+    | #{category.description}
 
-  form(action=category.url + "/delete", method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)") 
+  p
+    a(href=`/category/${category.id}/update`) Update
+
+  form(action=`/category/${category.id}/delete`, method="post" onsubmit="return (confirm('Confirm to delete') ? this.submit() : false)")
     button(type="submit") Delete
-  
+
   h2 All Items
-  if items.length 
-    each item in items 
+  if items.length
+    each item in items
       p
-        a(href=item.url) #{item.name}
-  else 
+        a(href=`/item/${item.id}`) #{item.name}
+  else
     p There is no item.

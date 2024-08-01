@@ -4,28 +4,26 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
-// const mongoose = require('mongoose');
-// mongoose.set('strictQuery', false);
-
-// const { dbCredential } = require('./credential');
-// const mongoDB = process.env.MONGODB_URI || dbCredential;
-
-// main().catch((err) => console.log(err));
-// async function main() {
-//   await mongoose.connect(mongoDB);
-// }
-
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
 
 const app = express();
 
+const RateLimit = require('express-rate-limit');
+const limiter = RateLimit({
+  windowMs: 60000, // 1 min
+  max: 20,
+});
+app.use(limiter);
+const compression = require('compression');
+app.use(compression());
+const helmet = require('helmet');
+app.use(helmet());
+
 // view engine setup
-// app.set('views', path.join(__dirname, 'views'));
 app.set('views', [
-  __dirname + '/views',
-  __dirname + '/views/category',
-  __dirname + '/views/item',
+  path.join(__dirname, 'views'),
+  path.join(__dirname, 'views', 'category'),
+  path.join(__dirname, 'views', 'item'),
 ]);
 app.set('view engine', 'pug');
 
@@ -39,7 +37,6 @@ const categoryRouter = require('./routes/category');
 const itemRouter = require('./routes/item');
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/category', categoryRouter);
 app.use('/item', itemRouter);
 
